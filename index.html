@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Resume Generator</title>
+    <script src="app.js" defer></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      /* General Page Styles */
+      body {
+        background-color: #f9fafb;
+        color: #1a202c;
+      }
+
+      /* Print-specific styles */
+      @media print {
+        @page {
+          size: A4;
+          margin: 20mm; /* Adds uniform margin around the content */
+        }
+        body {
+          margin: 0;
+          padding: 0;
+        }
+        .container {
+          padding: 0;
+          margin: 0;
+          width: 100%;
+        }
+        #resume {
+          width: 100%;
+          max-width: 100%;
+          padding: 0;
+          margin: 0 auto;
+          border: none;
+          box-shadow: none;
+        }
+        .print-area {
+          width: 100%;
+          max-width: 800px;
+          margin: 0 auto;
+          padding: 0;
+        }
+        /* Ensures even padding around the text */
+        #resumeContent {
+          padding: 10mm 15mm; /* Left and right padding for balance */
+        }
+        /* Remove shadows, unnecessary elements, and controls when printing */
+        .no-print {
+          display: none;
+        }
+      }
+
+      /* Layout for the profile image and details */
+      .profile-section {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+      }
+      .profile-section img {
+        border-radius: 50%;
+        margin-right: 1.5rem;
+      }
+
+      /* Skills as pills */
+      .pill {
+        display: inline-block;
+        background-color: #e2e8f0;
+        color: #1a202c;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        margin: 0.25rem;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-100 text-gray-900">
+    <div class="container mx-auto p-5 print-area">
+      <h1 class="text-3xl font-bold text-center mb-10 no-print">Resume Generator</h1>
+
+      <!-- User Input Form -->
+      <section id="inputForm">
+        <form id="resumeForm" class="bg-white p-5 shadow-lg rounded-md">
+          <h2 class="text-2xl font-semibold mb-4">Enter Your Details</h2>
+
+          <!-- Profile Picture Upload -->
+          <div class="mb-4">
+            <label for="profilePicture" class="block font-medium"
+              >Profile Picture</label
+            >
+            <input
+              type="file"
+              id="profilePicture"
+              accept="image/*"
+              class="mt-1 block w-full border border-gray-300 p-2 rounded-md"
+              required
+            />
+          </div>
+
+          <div class="mb-4">
+            <label for="fullName" class="block font-medium">Full Name</label>
+            <input
+              type="text"
+              id="fullName"
+              class="mt-1 block w-full border border-gray-300 p-2 rounded-md"
+              required
+            />
+          </div>
+
+          <div class="mb-4">
+            <label for="developerProfile" class="block font-medium"
+              >Developer Profile</label
+            >
+            <input
+              type="text"
+              id="developerProfile"
+              class="mt-1 block w-full border border-gray-300 p-2 rounded-md"
+              placeholder="E.g. Frontend Developer, Full Stack Developer"
+              required
+            />
+          </div>
+
+          <div class="mb-4">
+            <label for="bio" class="block font-medium">Bio</label>
+            <textarea
+              id="bio"
+              rows="4"
+              class="mt-1 block w-full border border-gray-300 p-2 rounded-md"
+              required
+            ></textarea>
+          </div>
+
+          <div class="mb-4">
+            <label for="email" class="block font-medium">Email</label>
+            <input
+              type="email"
+              id="email"
+              class="mt-1 block w-full border border-gray-300 p-2 rounded-md"
+              required
+            />
+          </div>
+
+          <div class="mb-4">
+            <label for="mobile" class="block font-medium">Mobile Number</label>
+            <input
+              type="tel"
+              id="mobile"
+              class="mt-1 block w-full border border-gray-300 p-2 rounded-md"
+              required
+            />
+          </div>
+
+          <div class="mb-4">
+            <label for="skills" class="block font-medium"
+              >Skills (Comma separated)</label
+            >
+            <input
+              type="text"
+              id="skills"
+              class="mt-1 block w-full border border-gray-300 p-2 rounded-md"
+              required
+            />
+          </div>
+
+          <div class="mb-4">
+            <label for="projects" class="block font-medium"
+              >Projects (Title and Description, Comma separated)</label
+            >
+            <textarea
+              id="projects"
+              rows="4"
+              class="mt-1 block w-full border border-gray-300 p-2 rounded-md"
+              required
+            ></textarea>
+          </div>
+
+          <div class="mb-4">
+            <label for="links" class="block font-medium"
+              >Links (Name and URL, Comma separated)</label
+            >
+            <textarea
+              id="links"
+              rows="4"
+              class="mt-1 block w-full border border-gray-300 p-2 rounded-md"
+              placeholder="E.g. GitHub, LinkedIn, Personal Website"
+              required
+            ></textarea>
+          </div>
+
+          <button
+            type="submit"
+            class="bg-blue-600 text-white py-2 px-4 rounded-md mt-3 no-print"
+          >
+            Generate Resume
+          </button>
+        </form>
+      </section>
+
+      <!-- Resume Display -->
+      <section id="resumeDisplay" class="hidden mt-10">
+        <div id="resume" class="bg-white p-10 shadow-lg rounded-md print-area">
+          <div id="resumeContent">
+            <!-- Profile Section -->
+            <div class="profile-section">
+              <img
+                id="profilePicPreview"
+                src=""
+                alt="Profile Picture"
+                class="w-24 h-24 rounded-full mr-6 hidden"
+              />
+              <div>
+                <h2 id="resumeName" class="text-3xl font-bold"></h2>
+                <h3 id="resumeProfile" class="text-xl text-gray-600"></h3>
+              </div>
+            </div>
+
+            <!-- About Me Section -->
+            <section id="aboutMe" class="mt-10">
+              <h3 class="text-2xl font-semibold">About Me</h3>
+              <p id="resumeBio" class="mt-2 text-lg"></p>
+            </section>
+
+            <!-- Skills Section -->
+            <h3 class="text-2xl font-semibold mt-6">Skills</h3>
+            <div id="resumeSkills" class="flex flex-wrap gap-2 mt-3"></div>
+
+            <!-- Projects Section -->
+            <h3 class="text-2xl font-semibold mt-6">Projects</h3>
+            <ul id="resumeProjects" class="list-disc list-inside mt-3"></ul>
+
+            <!-- Contact Me Section -->
+            <section id="contactMe" class="mt-10">
+              <h3 class="text-2xl font-semibold">Contact Me</h3>
+              <p id="resumeEmail" class="mt-1"></p>
+              <p id="resumeMobile" class="mt-1"></p>
+
+              <h4 class="text-xl font-semibold mt-5">Links</h4>
+              <ul id="resumeLinks" class="list-disc list-inside mt-3"></ul>
+            </section>
+          </div>
+        </div>
+
+        <button
+          onclick="window.print()"
+          class="bg-green-600 text-white py-2 px-4 rounded-md mt-5 no-print"
+        >
+          Print Resume
+        </button>
+      </section>
+    </div>
+  </body>
+</html>
